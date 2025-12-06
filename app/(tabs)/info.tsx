@@ -2,10 +2,9 @@
  * ============================================
  * WATERMARK DEVELOPER
  * ============================================
- * Nama        : Edi Suherlan
- * GitHub      : github/edisuherlan
- * Email       : audhighasu@gmail.com
- * Website     : audhighasu.com
+ * Nama        : Ahmad Sanusi
+ * GitHub      : github/Ahmadsanusi18
+ * Email       : ahmadsanusiii18@gmail.com
  * ============================================
  * * FILE: app/(tabs)/info.tsx
  * UPDATE: Desain Modern & Gaming Look
@@ -36,7 +35,7 @@ export default function InfoScreen() {
   // Handlers
   const handleEmailPress = () => Linking.openURL('mailto:ahmadsanusiii18@gmail.com');
   const handleGithubPress = () => Linking.openURL('https://github.com/Ahmadsanusi18');
-  const handleWebsitePress = () => Linking.openURL('https://audhighasu.com'); // Contoh link tambahan
+ // Contoh link tambahan
 
   return (
     <View style={styles.container}>
