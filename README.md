@@ -59,8 +59,8 @@ Sebelum memulai, pastikan Anda telah menginstall:
 
 1. **Clone repository ini**
    ```bash
-   git clone https://github.com/edisuherlan/game-tetris-pemecah_bata-sederhana.git
-   cd game-tetris-pemecah_bata-sederhana
+   git clone https://github.com/Ahmadsanusi18/Game-pemecahbata-sederhana.git
+   cd Game-pemecahbata-sederhana
    ```
 
 2. **Install dependencies**
@@ -233,8 +233,8 @@ Proyek ini menggunakan lisensi MIT. Lihat file `LICENSE` untuk detail lebih lanj
 ## 👤 Author
 
 **Edisuherlan**
-- GitHub: [@edisuherlan](https://github.com/edisuherlan)
-- Repository: [game-tetris-pemecah_bata-sederhana](https://github.com/edisuherlan/game-tetris-pemecah_bata-sederhana)
+- GitHub: [@edisuherlan](https://github.com/Ahmadsanusi18)
+- Repository: [game-tetris-pemecah_bata-sederhana](https://github.com/Ahmadsanusi18/Game-pemecahbata-sederhana)
 
 ## 🙏 Acknowledgments
 
@@ -244,7 +244,7 @@ Proyek ini menggunakan lisensi MIT. Lihat file `LICENSE` untuk detail lebih lanj
 
 ## 📞 Support
 
-Jika Anda memiliki pertanyaan atau menemukan bug, silakan buka [issue](https://github.com/edisuherlan/game-tetris-pemecah_bata-sederhana/issues) di repository ini.
+Jika Anda memiliki pertanyaan atau menemukan bug, silakan buka [issue](https://github.com/Ahmadsanusi18/Game-pemecahbata-sederhana/issues) di repository ini.
 
 ---
 
