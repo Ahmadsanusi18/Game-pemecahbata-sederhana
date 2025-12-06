@@ -7,499 +7,372 @@
  * Email       : audhighasu@gmail.com
  * Website     : audhighasu.com
  * ============================================
- * 
- * FILE: app/(tabs)/info.tsx
- * DESKRIPSI: Halaman informasi developer dan aplikasi
- * 
- * Halaman ini menampilkan informasi tentang developer game dan fitur-fitur aplikasi.
- * Menyediakan link email dan GitHub yang dapat diklik.
+ * * FILE: app/(tabs)/info.tsx
+ * UPDATE: Desain Modern & Gaming Look
  */
 
-// Import MaterialIcons dari @expo/vector-icons untuk menampilkan icon di halaman
-import { MaterialIcons } from '@expo/vector-icons';
-// Import StatusBar dari expo-status-bar untuk mengatur tampilan status bar
+import { MaterialIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-// Import React untuk membuat komponen
 import React from 'react';
-// Import komponen React Native untuk UI dan navigasi
 import {
-  Linking, // Untuk membuka URL eksternal (email, browser, dll)
-  ScrollView, // Komponen untuk scrollable content
-  StyleSheet, // Untuk membuat style sheet
-  Text, // Komponen untuk menampilkan teks
-  TouchableOpacity, // Komponen button yang bisa ditekan
-  View, // Komponen container/view
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Dimensions
 } from 'react-native';
-// Import hook untuk mendapatkan safe area insets (untuk notch/status bar)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// Import LinearGradient untuk latar belakang yang keren
+import { LinearGradient } from 'expo-linear-gradient';
 
-/**
- * Komponen InfoScreen - Halaman informasi developer dan aplikasi
- * 
- * Halaman ini menampilkan:
- * - Informasi tentang game (judul, deskripsi)
- * - Informasi developer (nama, email, GitHub)
- * - Fitur-fitur aplikasi
- * - Footer dengan copyright
- * 
- * Fitur interaktif:
- * - Email dapat diklik untuk membuka email client
- * - GitHub dapat diklik untuk membuka profil GitHub di browser
- * 
- * @returns JSX.Element - Komponen halaman info dengan semua informasi developer dan aplikasi
- */
+const { width } = Dimensions.get('window');
+
 export default function InfoScreen() {
-  // ============================================
-  // HOOKS
-  // ============================================
-  /**
-   * Hook untuk mendapatkan safe area insets
-   * insets.top memberikan tinggi area yang aman dari atas (untuk notch/status bar)
-   * Digunakan untuk padding top agar konten tidak tertutup oleh notch atau status bar
-   */
   const insets = useSafeAreaInsets();
 
-  // ============================================
-  // EVENT HANDLERS
-  // ============================================
-  /**
-   * Handler untuk membuka aplikasi email saat email diklik
-   * 
-   * Fungsi ini menggunakan Linking.openURL dengan protocol 'mailto:' untuk:
-   * - Membuka aplikasi email default di perangkat
-   * - Pre-fill alamat email developer
-   * - Memungkinkan user langsung mengirim email tanpa copy-paste
-   * 
-   * Protocol 'mailto:' adalah standar untuk membuka email client
-   */
-  const handleEmailPress = () => {
-    // Membuka email client dengan alamat email developer yang sudah diisi
-    Linking.openURL('mailto:edisuherlan@gmail.com');
-  };
+  // Handlers
+  const handleEmailPress = () => Linking.openURL('mailto:ahmadsanusiii18@gmail.com');
+  const handleGithubPress = () => Linking.openURL('https://github.com/Ahmadsanusi18');
+  const handleWebsitePress = () => Linking.openURL('https://audhighasu.com'); // Contoh link tambahan
 
-  /**
-   * Handler untuk membuka GitHub di browser saat GitHub diklik
-   * 
-   * Fungsi ini menggunakan Linking.openURL dengan URL GitHub untuk:
-   * - Membuka browser default di perangkat
-   * - Menampilkan profil GitHub developer
-   * - Memungkinkan user melihat portfolio dan project developer
-   */
-  const handleGithubPress = () => {
-    // Membuka profil GitHub developer di browser
-    Linking.openURL('https://github.com/edisuherlan');
-  };
-
-  // ============================================
-  // RENDER UI
-  // ============================================
-  /**
-   * Render utama komponen halaman info
-   * Menampilkan semua informasi developer dan aplikasi dalam layout scrollable
-   */
   return (
-    /* Container utama dengan padding top untuk safe area (notch/status bar) */
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Status bar dengan style light (teks putih) untuk kontras dengan background gelap */}
+    <View style={styles.container}>
       <StatusBar style="light" />
       
-      {/* ============================================
-          HEADER SECTION
-          ============================================ */}
-      {/* Header dengan judul halaman */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Tentang Game</Text>
-      </View>
+      {/* Background Utama Gelap */}
+      <View style={styles.backgroundContainer} />
 
-      {/* ============================================
-          SCROLLABLE CONTENT
-          ============================================ */}
-      {/* ScrollView untuk konten yang bisa di-scroll jika terlalu panjang */}
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView 
+        style={styles.scrollView} 
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top }]}
+        showsVerticalScrollIndicator={false}
+      >
+        
         {/* ============================================
-            SECTION 1: GAME INFO
+            HERO SECTION (GAMING HEADER)
             ============================================ */}
-        {/* Section untuk menampilkan informasi game */}
-        <View style={styles.section}>
-          {/* Container untuk icon game di tengah */}
-          <View style={styles.iconContainer}>
-            {/* Icon game controller dengan ukuran besar (80px) */}
-            <MaterialIcons name="videogame-asset" size={80} color="#4ecdc4" />
-          </View>
-          
-          {/* Judul game dengan ukuran besar dan bold */}
-          <Text style={styles.gameTitle}>Pemecah Bata</Text>
-          {/* Subtitle game dengan ukuran lebih kecil dan warna abu-abu */}
-          <Text style={styles.gameSubtitle}>Game Breakout Sederhana</Text>
-          
-          {/* Divider untuk memisahkan section */}
-          <View style={styles.divider} />
+        <View style={styles.heroContainer}>
+            <LinearGradient
+                colors={['#9738c6ff', '#3f1960ff', '#2f0035ff']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.heroGradient}
+            >
+                <View style={styles.heroIconCircle}>
+                    <MaterialIcons name="sports-esports" size={60} color="#fff" />
+                </View>
+                <Text style={styles.heroTitle}>Pemecah Bata</Text>
+                <View style={styles.badgeContainer}>
+                    <Text style={styles.badgeText}>v1.0.0</Text>
+                </View>
+            </LinearGradient>
         </View>
 
         {/* ============================================
-            SECTION 2: DEVELOPER INFO
+            DEVELOPER PROFILE CARD
             ============================================ */}
-        {/* Section untuk menampilkan informasi developer */}
-        <View style={styles.section}>
-          {/* Judul section dengan emoji developer */}
-          <Text style={styles.sectionTitle}>👨‍💻 Developer</Text>
-          
-          {/* Card untuk menampilkan informasi developer */}
-          <View style={styles.infoCard}>
-            {/* Row untuk nama developer */}
-            <View style={styles.infoRow}>
-              {/* Icon person untuk nama */}
-              <MaterialIcons name="person" size={24} color="#4ecdc4" />
-              {/* Container untuk konten informasi */}
-              <View style={styles.infoContent}>
-                {/* Label untuk nama */}
-                <Text style={styles.infoLabel}>Nama</Text>
-                {/* Value nama developer */}
-                <Text style={styles.infoValue}>Edi Suherlan</Text>
-              </View>
+        <View style={styles.card}>
+            <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>👨‍💻 Creator</Text>
             </View>
-
-            {/* Row untuk email developer */}
-            <View style={styles.infoRow}>
-              {/* Icon email */}
-              <MaterialIcons name="email" size={24} color="#4ecdc4" />
-              {/* Container untuk konten informasi */}
-              <View style={styles.infoContent}>
-                {/* Label untuk email */}
-                <Text style={styles.infoLabel}>Email</Text>
-                {/* TouchableOpacity untuk membuat email bisa diklik */}
-                <TouchableOpacity onPress={handleEmailPress}>
-                  {/* Teks email dengan style link (warna cyan dan underline) */}
-                  <Text style={[styles.infoValue, styles.linkText]}>
-                    edisuherlan@gmail.com
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Row untuk GitHub developer */}
-            <View style={styles.infoRow}>
-              {/* Icon code untuk GitHub */}
-              <MaterialIcons name="code" size={24} color="#4ecdc4" />
-              {/* Container untuk konten informasi */}
-              <View style={styles.infoContent}>
-                {/* Label untuk GitHub */}
-                <Text style={styles.infoLabel}>GitHub</Text>
-                {/* TouchableOpacity untuk membuat GitHub bisa diklik */}
-                <TouchableOpacity onPress={handleGithubPress}>
-                  {/* Teks GitHub dengan style link (warna cyan dan underline) */}
-                  <Text style={[styles.infoValue, styles.linkText]}>
-                    github.com/edisuherlan
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* ============================================
-            SECTION 3: APP INFO
-            ============================================ */}
-        {/* Section untuk menampilkan informasi tentang aplikasi */}
-        <View style={styles.section}>
-          {/* Judul section dengan emoji mobile */}
-          <Text style={styles.sectionTitle}>📱 Tentang Aplikasi</Text>
-          
-          {/* Card untuk menampilkan informasi aplikasi */}
-          <View style={styles.infoCard}>
-            {/* Deskripsi aplikasi dengan line height yang nyaman untuk dibaca */}
-            <Text style={styles.appDescription}>
-              Pemecah Bata adalah game breakout sederhana yang dibuat dengan React Native dan Expo. 
-              Game ini menampilkan fitur-fitur seperti leaderboard, pengaturan tingkat kesulitan, 
-              dan penyimpanan data pemain secara lokal.
-            </Text>
             
-            {/* List fitur-fitur aplikasi */}
-            <View style={styles.featureList}>
-              {/* Fitur 1: Leaderboard */}
-              <View style={styles.featureItem}>
-                {/* Icon check circle untuk menandakan fitur tersedia */}
-                <MaterialIcons name="check-circle" size={20} color="#4ecdc4" />
-                {/* Teks deskripsi fitur */}
-                <Text style={styles.featureText}>Leaderboard dengan database lokal</Text>
-              </View>
-              
-              {/* Fitur 2: Pengaturan kesulitan */}
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check-circle" size={20} color="#4ecdc4" />
-                <Text style={styles.featureText}>Pengaturan tingkat kesulitan</Text>
-              </View>
-              
-              {/* Fitur 3: Riwayat permainan */}
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check-circle" size={20} color="#4ecdc4" />
-                <Text style={styles.featureText}>Riwayat permainan pemain</Text>
-              </View>
-              
-              {/* Fitur 4: Ganti nama pemain */}
-              <View style={styles.featureItem}>
-                <MaterialIcons name="check-circle" size={20} color="#4ecdc4" />
-                <Text style={styles.featureText}>Ganti nama pemain</Text>
-              </View>
+            <View style={styles.profileSection}>
+                <View style={styles.avatarPlaceholder}>
+                    <Text style={styles.avatarText}>AS</Text>
+                </View>
+                <View style={styles.profileInfo}>
+                    <Text style={styles.profileName}>Ahmad Sanusi</Text>
+                    <Text style={styles.profileRole}>Fullstack Developer</Text>
+                </View>
             </View>
-          </View>
+
+            {/* Social Buttons Row */}
+            <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity style={[styles.actionButton, styles.githubButton]} onPress={handleGithubPress}>
+                    <FontAwesome5 name="github" size={20} color="#fff" />
+                    <Text style={styles.actionButtonText}>GitHub</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.actionButton, styles.emailButton]} onPress={handleEmailPress}>
+                    <MaterialIcons name="email" size={20} color="#fff" />
+                    <Text style={styles.actionButtonText}>Email</Text>
+                </TouchableOpacity>
+            </View>
         </View>
 
         {/* ============================================
-            FOOTER SECTION
+            APP INFO & FEATURES
             ============================================ */}
-        {/* Footer dengan copyright dan credit */}
-        <View style={styles.footer}>
-          {/* Copyright text */}
-          <Text style={styles.footerText}>© 2025 Edi Suherlan</Text>
-          {/* Credit text dengan emoji heart */}
-          <Text style={styles.footerText}>Made with ❤️ using React Native & Expo</Text>
+        <View style={styles.card}>
+            <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>🚀 Tentang Aplikasi</Text>
+            </View>
+            
+            <Text style={styles.descriptionText}>
+                Game breakout klasik yang didesain ulang dengan sentuhan modern menggunakan React Native. Tantang refleks Anda dan raih skor tertinggi!
+            </Text>
+
+            <View style={styles.divider} />
+
+            {/* Feature Grid */}
+            <View style={styles.featuresGrid}>
+                <FeatureItem icon="leaderboard" label="Leaderboard" color="#FFD700" />
+                <FeatureItem icon="speed" label="Level Kesulitan" color="#FF6B6B" />
+                <FeatureItem icon="save" label="Auto Save" color="#4ECDC4" />
+                <FeatureItem icon="edit" label="Kustomisasi" color="#A8E6CF" />
+            </View>
         </View>
+
+        {/* ============================================
+            FOOTER
+            ============================================ */}
+        <View style={styles.footer}>
+            <Text style={styles.footerText}>Designed & Built by</Text>
+            <Text style={styles.footerHighlight}>Ahmad Sanusi © 2025</Text>
+            <Text style={styles.versionText}>Build 1.0.25 (Stable)</Text>
+        </View>
+        
+        {/* Spacing bottom untuk navigasi bottom tab */}
+        <View style={{ height: 100 }} />
+
       </ScrollView>
     </View>
   );
 }
 
-/**
- * StyleSheet untuk semua komponen UI dalam halaman info
- * Menggunakan StyleSheet.create untuk optimasi performa React Native
- * 
- * Skema warna:
- * - Background utama: #1a1a2e (biru tua gelap)
- * - Background card: #2a2a3e (biru tua lebih terang)
- * - Warna accent: #4ecdc4 (cyan/hijau muda)
- * - Teks utama: #fff (putih)
- * - Teks sekunder: #ccc, #999, #666 (abu-abu dengan berbagai tingkat)
- */
+// Komponen Kecil untuk Item Fitur agar kode lebih rapi
+const FeatureItem = ({ icon, label, color }: { icon: any, label: string, color: string }) => (
+    <View style={styles.featureItemContainer}>
+        <View style={[styles.featureIconBox, { backgroundColor: `${color}20` }]}> 
+            {/* Hex color + 20 opacity */}
+            <MaterialIcons name={icon} size={24} color={color} />
+        </View>
+        <Text style={styles.featureLabel}>{label}</Text>
+    </View>
+);
+
 const styles = StyleSheet.create({
-  // ============================================
-  // STYLE UNTUK CONTAINER UTAMA
-  // ============================================
-  /**
-   * Style untuk container utama halaman
-   * Container ini membungkus semua konten halaman
-   */
   container: {
-    flex: 1,                      // Mengisi seluruh ruang yang tersedia
-    backgroundColor: '#1a1a2e',  // Background warna biru tua gelap (sama dengan halaman game)
+    flex: 1,
+    backgroundColor: '#0f172a', // Slate 900 (Darker, more modern)
   },
-  
-  // ============================================
-  // STYLE UNTUK HEADER
-  // ============================================
-  /**
-   * Style untuk header halaman
-   * Header menampilkan judul "Tentang Game"
-   */
-  header: {
-    paddingHorizontal: 20,        // Padding horizontal 20px
-    paddingVertical: 15,          // Padding vertikal 15px
-    borderBottomWidth: 1,         // Ketebalan border bawah 1px
-    borderBottomColor: '#333',    // Warna border abu-abu gelap
+  backgroundContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#0f172a',
   },
-  
-  /**
-   * Style untuk judul header
-   */
-  title: {
-    fontSize: 24,                 // Ukuran font 24px (cukup besar untuk header)
-    fontWeight: 'bold',           // Teks tebal untuk emphasis
-    color: '#fff',                // Warna putih untuk kontras dengan background gelap
-  },
-  
-  // ============================================
-  // STYLE UNTUK SCROLLVIEW
-  // ============================================
-  /**
-   * Style untuk ScrollView container
-   */
   scrollView: {
-    flex: 1,                      // Mengisi ruang yang tersedia setelah header
+    flex: 1,
   },
-  
-  /**
-   * Style untuk konten di dalam ScrollView
-   * contentContainerStyle digunakan untuk styling konten yang di-scroll
-   */
   scrollContent: {
-    padding: 20,                  // Padding 20px di semua sisi untuk spacing
+    paddingBottom: 40,
   },
   
-  // ============================================
-  // STYLE UNTUK SECTION
-  // ============================================
-  /**
-   * Style untuk setiap section dalam halaman
-   * Section adalah container untuk grup konten terkait
-   */
-  section: {
-    marginBottom: 30,             // Jarak bawah 30px untuk spacing antar section
+  // HERO SECTION
+  heroContainer: {
+    marginBottom: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    overflow: 'hidden',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
   },
-  
-  /**
-   * Style untuk container icon game
-   * Container ini menampilkan icon game di tengah
-   */
-  iconContainer: {
-    alignItems: 'center',         // Tengahkan icon secara horizontal
-    marginBottom: 20,             // Jarak bawah 20px
+  heroGradient: {
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  
-  /**
-   * Style untuk judul game
-   */
-  gameTitle: {
-    fontSize: 32,                 // Ukuran font besar (32px) untuk emphasis
-    fontWeight: 'bold',           // Teks tebal
-    color: '#fff',                // Warna putih
-    textAlign: 'center',          // Teks rata tengah
-    marginBottom: 5,              // Jarak bawah 5px
+  heroIconCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
-  
-  /**
-   * Style untuk subtitle game
-   */
-  gameSubtitle: {
-    fontSize: 16,                 // Ukuran font sedang (16px)
-    color: '#999',                // Warna abu-abu terang untuk kontras dengan judul
-    textAlign: 'center',          // Teks rata tengah
-    marginBottom: 20,             // Jarak bawah 20px
+  heroTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
-  
-  /**
-   * Style untuk divider (garis pemisah)
-   */
+  badgeContainer: {
+    marginTop: 10,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  badgeText: {
+    color: '#a5b4fc',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+
+  // CARDS SHARED STYLE
+  card: {
+    backgroundColor: '#1e293b', // Slate 800
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#334155',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  cardHeader: {
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#334155',
+    paddingBottom: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#e2e8f0',
+  },
+
+  // PROFILE SECTION
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  avatarPlaceholder: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#3b82f6', // Blue 500
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  avatarText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  profileRole: {
+    fontSize: 14,
+    color: '#94a3b8', // Slate 400
+    marginTop: 2,
+  },
+
+  // ACTION BUTTONS
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingVertical: 12,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+  },
+  githubButton: {
+    backgroundColor: '#24292e', // GitHub dark
+  },
+  emailButton: {
+    backgroundColor: '#ea4335', // Google Red
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+
+  // APP INFO TEXT
+  descriptionText: {
+    color: '#cbd5e1',
+    lineHeight: 22,
+    fontSize: 14,
+    marginBottom: 15,
+  },
   divider: {
-    height: 2,                    // Tinggi divider 2px
-    backgroundColor: '#333',      // Warna abu-abu gelap
-    marginVertical: 20,           // Margin vertikal 20px (atas dan bawah)
+    height: 1,
+    backgroundColor: '#334155',
+    marginVertical: 15,
   },
   
-  /**
-   * Style untuk judul section (Developer, Tentang Aplikasi)
-   */
-  sectionTitle: {
-    fontSize: 20,                 // Ukuran font 20px
-    fontWeight: 'bold',           // Teks tebal
-    color: '#fff',                // Warna putih
-    marginBottom: 15,             // Jarak bawah 15px
+  // FEATURES GRID
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  
-  // ============================================
-  // STYLE UNTUK INFO CARD
-  // ============================================
-  /**
-   * Style untuk card informasi (developer info, app info)
-   * Card memberikan background yang berbeda untuk memisahkan konten
-   */
-  infoCard: {
-    backgroundColor: '#2a2a3e',   // Background biru tua lebih terang dari background utama
-    borderRadius: 12,             // Border radius 12px untuk sudut melengkung
-    padding: 20,                  // Padding 20px di semua sisi
+  featureItemContainer: {
+    width: '48%', // 2 kolom
+    backgroundColor: '#0f172a',
+    padding: 15,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#334155',
   },
-  
-  /**
-   * Style untuk setiap row informasi (nama, email, GitHub)
-   */
-  infoRow: {
-    flexDirection: 'row',         // Layout horizontal (icon dan konten sejajar)
-    alignItems: 'center',        // Align items di tengah secara vertikal
-    marginBottom: 20,            // Jarak bawah 20px antar row
+  featureIconBox: {
+    width: 45,
+    height: 45,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  
-  /**
-   * Style untuk container konten informasi (label dan value)
-   */
-  infoContent: {
-    marginLeft: 15,              // Jarak kiri 15px dari icon
-    flex: 1,                     // Mengisi ruang yang tersedia
+  featureLabel: {
+    color: '#e2e8f0',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
   },
-  
-  /**
-   * Style untuk label informasi (Nama, Email, GitHub)
-   */
-  infoLabel: {
-    fontSize: 12,                // Ukuran font kecil (12px) untuk label
-    color: '#999',               // Warna abu-abu terang
-    marginBottom: 5,             // Jarak bawah 5px
-  },
-  
-  /**
-   * Style untuk value informasi (nilai sebenarnya)
-   */
-  infoValue: {
-    fontSize: 16,                // Ukuran font 16px
-    color: '#fff',               // Warna putih
-    fontWeight: '500',           // Font weight medium (500)
-  },
-  
-  /**
-   * Style khusus untuk teks link (email dan GitHub)
-   * Digabungkan dengan infoValue untuk memberikan style link
-   */
-  linkText: {
-    color: '#4ecdc4',            // Warna cyan (brand color)
-    textDecorationLine: 'underline', // Garis bawah untuk menunjukkan bisa diklik
-  },
-  
-  // ============================================
-  // STYLE UNTUK DESKRIPSI APLIKASI
-  // ============================================
-  /**
-   * Style untuk deskripsi aplikasi
-   */
-  appDescription: {
-    fontSize: 14,                // Ukuran font 14px (ukuran standar untuk paragraf)
-    color: '#ccc',               // Warna abu-abu terang untuk readability
-    lineHeight: 22,              // Tinggi baris 22px untuk spacing yang nyaman
-    marginBottom: 20,            // Jarak bawah 20px
-  },
-  
-  /**
-   * Style untuk container list fitur
-   */
-  featureList: {
-    marginTop: 10,                // Jarak atas 10px dari deskripsi
-  },
-  
-  /**
-   * Style untuk setiap item fitur
-   */
-  featureItem: {
-    flexDirection: 'row',         // Layout horizontal (icon dan teks sejajar)
-    alignItems: 'center',        // Align items di tengah secara vertikal
-    marginBottom: 12,             // Jarak bawah 12px antar item
-  },
-  
-  /**
-   * Style untuk teks fitur
-   */
-  featureText: {
-    fontSize: 14,                // Ukuran font 14px
-    color: '#ccc',               // Warna abu-abu terang
-    marginLeft: 10,              // Jarak kiri 10px dari icon
-    flex: 1,                     // Mengisi ruang yang tersedia
-  },
-  
-  // ============================================
-  // STYLE UNTUK FOOTER
-  // ============================================
-  /**
-   * Style untuk footer halaman
-   */
+
+  // FOOTER
   footer: {
-    alignItems: 'center',        // Tengahkan konten secara horizontal
-    marginTop: 20,               // Jarak atas 20px dari section terakhir
-    marginBottom: 40,            // Jarak bawah 40px untuk spacing di akhir scroll
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
   },
-  
-  /**
-   * Style untuk teks footer
-   */
   footerText: {
-    fontSize: 12,                // Ukuran font kecil (12px) untuk footer
-    color: '#666',               // Warna abu-abu gelap (subtle)
-    marginBottom: 5,             // Jarak bawah 5px antar baris
+    color: '#64748b',
+    fontSize: 12,
+  },
+  footerHighlight: {
+    color: '#94a3b8',
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  versionText: {
+    color: '#475569',
+    fontSize: 10,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
 });
-

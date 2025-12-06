@@ -2,637 +2,383 @@
  * ============================================
  * WATERMARK DEVELOPER
  * ============================================
- * Nama        : Edi Suherlan
- * GitHub      : github/edisuherlan
- * Email       : audhighasu@gmail.com
- * Website     : audhighasu.com
+ * Nama        : Ahmad Sanusi
+ * GitHub      : github/Ahmadsanusi18
+ * Email       : ahmadsanusiii18@gmail.com
  * ============================================
- * 
- * FILE: app/(tabs)/settings.tsx
+ * * FILE: app/(tabs)/settings.tsx
  * DESKRIPSI: Halaman pengaturan game
- * 
- * Halaman ini menampilkan opsi pengaturan tingkat kesulitan game.
- * Pemain dapat memilih antara Mudah, Sedang, atau Sulit yang akan
- * mempengaruhi kecepatan bola dalam permainan.
+ * UPDATE: Desain Modern, Fix Import Alert, dan Ganti Ikon Visual
  */
 
-// Import AsyncStorage untuk penyimpanan data lokal yang persisten
-// AsyncStorage digunakan untuk menyimpan pengaturan game agar tetap tersimpan meskipun app ditutup
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Import StatusBar untuk mengatur tampilan status bar di perangkat
 import { StatusBar } from 'expo-status-bar';
-// Import React dan hooks untuk state management dan side effects
 import React, { useEffect, useState } from 'react';
-// Import komponen React Native untuk UI
 import {
-  ScrollView, // Komponen untuk scrollable content
-  StyleSheet, // Untuk membuat style sheet
-  Text, // Komponen untuk menampilkan teks
-  TouchableOpacity, // Komponen button yang bisa ditekan
-  View, // Komponen container/view
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    ActivityIndicator,
+    Alert, // <-- PERBAIKAN: Alert diimpor
 } from 'react-native';
-// Import hook untuk mendapatkan safe area insets (untuk notch/status bar)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 // ============================================
-// KONSTANTA
+// KONSTANTA & TIPE DATA
 // ============================================
-/**
- * Key untuk menyimpan pengaturan di AsyncStorage
- * Key ini digunakan sebagai identifier untuk menyimpan dan mengambil data pengaturan
- * Format '@app_name:data_type' adalah konvensi untuk menghindari konflik dengan app lain
- */
 const SETTINGS_KEY = '@pemecah_bata:settings';
 
-// ============================================
-// TIPE DATA
-// ============================================
-/**
- * Tipe data untuk tingkat kesulitan game
- * Union type yang membatasi nilai hanya pada 'easy', 'medium', atau 'hard'
- * Tipe ini diekspor agar bisa digunakan di file lain (misalnya di index.tsx)
- */
 export type DifficultyLevel = 'easy' | 'medium' | 'hard';
 
-/**
- * Interface untuk struktur data pengaturan game
- * Interface ini mendefinisikan format data yang disimpan di AsyncStorage
- */
 interface GameSettings {
-  difficulty: DifficultyLevel;  // Tingkat kesulitan yang dipilih user
-  ballSpeed: number;             // Kecepatan bola sesuai dengan tingkat kesulitan yang dipilih
+    difficulty: DifficultyLevel;
+    ballSpeed: number;
 }
 
+// Konfigurasi Warna
+const BG_DARK = '#1a1a2e';
+const CARD_BASE = '#2a2a3e';
+const ACCENT_COLOR = '#4ecdc4'; // Cyan
+const DANGER_COLOR = '#ff4d4d'; // Merah/Neon
+
 // ============================================
-// KONFIGURASI TINGKAT KESULITAN
+// KONFIGURASI TINGKAT KESULITAN DENGAN IKON MATERIAL
 // ============================================
-/**
- * Konfigurasi untuk setiap tingkat kesulitan
- * 
- * Object ini berisi mapping antara tingkat kesulitan dengan:
- * - label: Nama yang ditampilkan ke user (bahasa Indonesia)
- * - speed: Kecepatan bola dalam permainan (semakin tinggi semakin cepat)
- * - description: Deskripsi singkat tentang tingkat kesulitan
- * 
- * Record<DifficultyLevel, ...> memastikan semua tingkat kesulitan memiliki konfigurasi
- */
-const DIFFICULTY_CONFIGS: Record<DifficultyLevel, { label: string; speed: number; description: string }> = {
-  // Tingkat kesulitan mudah: kecepatan bola 4 (paling lambat)
-  easy: {
-    label: 'Mudah',                                    // Label yang ditampilkan
-    speed: 4,                                         // Kecepatan bola: 4 (lambat)
-    description: 'Bola bergerak lebih lambat, cocok untuk pemula', // Deskripsi untuk user
-  },
-  // Tingkat kesulitan sedang: kecepatan bola 6 (standar/default)
-  medium: {
-    label: 'Sedang',                                  // Label yang ditampilkan
-    speed: 6,                                         // Kecepatan bola: 6 (standar)
-    description: 'Kecepatan bola standar, cocok untuk pemain biasa', // Deskripsi untuk user
-  },
-  // Tingkat kesulitan sulit: kecepatan bola 8 (paling cepat)
-  hard: {
-    label: 'Sulit',                                   // Label yang ditampilkan
-    speed: 8,                                         // Kecepatan bola: 8 (cepat)
-    description: 'Bola bergerak cepat, cocok untuk pemain berpengalaman', // Deskripsi untuk user
-  },
+const DIFFICULTY_CONFIGS: Record<DifficultyLevel, { label: string; speed: number; description: string; icon: keyof typeof MaterialIcons.glyphMap; color: string }> = {
+    // Tingkat kesulitan mudah
+    easy: {
+        label: 'Mudah',
+        speed: 4,
+        description: 'Bola bergerak lebih lambat, cocok untuk pemula dan bersantai. Sulit dikalahkan.',
+        icon: 'sentiment-satisfied-alt', // Wajah Senang
+        color: ACCENT_COLOR, // Cyan
+    },
+    // Tingkat kesulitan sedang
+    medium: {
+        label: 'Sedang',
+        speed: 6,
+        description: 'Kecepatan bola standar, seimbang antara tantangan dan relaksasi. Permainan reguler.',
+        icon: 'balance', // Timbangan/Keseimbangan
+        color: '#ffc107', // Kuning/Gold
+    },
+    // Tingkat kesulitan sulit
+    hard: {
+        label: 'Sulit',
+        speed: 8,
+        description: 'Bola bergerak cepat, membutuhkan refleks tinggi. Cocok untuk pemain berpengalaman.',
+        icon: 'flash-on', // Petir/Cepat
+        color: DANGER_COLOR, // Merah/Neon
+    },
 };
 
-/**
- * Komponen SettingsScreen - Halaman pengaturan game
- * 
- * Halaman ini memungkinkan user untuk:
- * - Memilih tingkat kesulitan game (Mudah, Sedang, Sulit)
- * - Melihat kecepatan bola untuk setiap tingkat kesulitan
- * - Menyimpan pengaturan yang dipilih secara persisten
- * 
- * Pengaturan yang dipilih akan mempengaruhi kecepatan bola dalam permainan.
- * Pengaturan disimpan di AsyncStorage agar tetap tersimpan meskipun app ditutup.
- * 
- * @returns JSX.Element - Komponen halaman pengaturan dengan opsi tingkat kesulitan
- */
 export default function SettingsScreen() {
-  // ============================================
-  // HOOKS
-  // ============================================
-  /**
-   * Hook untuk mendapatkan safe area insets
-   * insets.top memberikan tinggi area yang aman dari atas (untuk notch/status bar)
-   * Digunakan untuk padding top agar konten tidak tertutup oleh notch atau status bar
-   */
-  const insets = useSafeAreaInsets();
-  
-  // ============================================
-  // STATE MANAGEMENT
-  // ============================================
-  /**
-   * State untuk menyimpan tingkat kesulitan yang sedang dipilih user
-   * Default value: 'medium' (sedang)
-   * State ini akan diupdate saat user memilih tingkat kesulitan baru
-   */
-  const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>('medium');
-  
-  /**
-   * State untuk status loading saat memuat pengaturan dari storage
-   * Default value: true (loading saat pertama kali mount)
-   * Set ke false setelah pengaturan berhasil dimuat atau tidak ada pengaturan tersimpan
-   */
-  const [loading, setLoading] = useState(true);
+    const insets = useSafeAreaInsets();
+    const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel>('medium');
+    const [loading, setLoading] = useState(true);
 
-  // ============================================
-  // EFFECT UNTUK MEMUAT PENGATURAN SAAT MOUNT
-  // ============================================
-  /**
-   * Effect yang dijalankan sekali saat komponen pertama kali dimuat
-   * Memanggil loadSettings untuk memuat pengaturan yang tersimpan dari AsyncStorage
-   * 
-   * Dependencies: [] (array kosong) berarti effect hanya dijalankan sekali saat mount
-   */
-  useEffect(() => {
-    loadSettings();
-  }, []);
+    useEffect(() => {
+        loadSettings();
+    }, []);
 
-  // ============================================
-  // FUNGSI UNTUK MEMUAT PENGATURAN
-  // ============================================
-  /**
-   * Fungsi untuk memuat pengaturan dari AsyncStorage
-   * 
-   * Fungsi ini:
-   * 1. Mengambil data pengaturan dari AsyncStorage menggunakan SETTINGS_KEY
-   * 2. Parse data dari JSON string ke object GameSettings
-   * 3. Update state selectedDifficulty dengan tingkat kesulitan yang tersimpan
-   * 4. Set loading ke false setelah selesai (baik berhasil atau tidak)
-   * 
-   * Jika tidak ada pengaturan tersimpan, menggunakan default 'medium'
-   * 
-   * @returns Promise<void> - Tidak mengembalikan nilai
-   */
-  const loadSettings = async () => {
-    try {
-      // Ambil data pengaturan dari AsyncStorage
-      const settingsData = await AsyncStorage.getItem(SETTINGS_KEY);
-      
-      // Jika ada data yang tersimpan
-      if (settingsData) {
-        // Parse data dari JSON string ke object GameSettings
-        const settings: GameSettings = JSON.parse(settingsData);
-        
-        // Update state dengan tingkat kesulitan yang tersimpan
-        setSelectedDifficulty(settings.difficulty);
-      }
-      // Jika tidak ada data, state tetap menggunakan default 'medium'
-    } catch (error) {
-      // Jika terjadi error saat memuat, log error ke console
-      console.error('Error loading settings:', error);
-      // State tetap menggunakan default 'medium'
-    } finally {
-      // Set loading ke false setelah selesai (baik berhasil atau tidak)
-      // Ini memastikan loading screen tidak muncul selamanya
-      setLoading(false);
-    }
-  };
+    const loadSettings = async () => {
+        try {
+            const settingsData = await AsyncStorage.getItem(SETTINGS_KEY);
+            if (settingsData) {
+                const settings: GameSettings = JSON.parse(settingsData);
+                setSelectedDifficulty(settings.difficulty);
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  // ============================================
-  // FUNGSI UNTUK MENYIMPAN PENGATURAN
-  // ============================================
-  /**
-   * Fungsi untuk menyimpan pengaturan ke AsyncStorage
-   * 
-   * Fungsi ini:
-   * 1. Membuat object GameSettings dengan tingkat kesulitan dan kecepatan bola
-   * 2. Mengambil kecepatan bola dari DIFFICULTY_CONFIGS berdasarkan tingkat kesulitan
-   * 3. Menyimpan ke AsyncStorage sebagai JSON string
-   * 4. Update state selectedDifficulty untuk UI update
-   * 
-   * @param difficulty - Tingkat kesulitan yang akan disimpan ('easy', 'medium', atau 'hard')
-   * @returns Promise<void> - Tidak mengembalikan nilai
-   */
-  const saveSettings = async (difficulty: DifficultyLevel) => {
-    try {
-      // Buat object pengaturan dengan tingkat kesulitan dan kecepatan bola yang sesuai
-      const settings: GameSettings = {
-        difficulty,                                    // Tingkat kesulitan yang dipilih
-        ballSpeed: DIFFICULTY_CONFIGS[difficulty].speed, // Ambil kecepatan dari konfigurasi
-      };
-      
-      // Simpan ke AsyncStorage sebagai JSON string
-      // AsyncStorage hanya bisa menyimpan string, jadi perlu stringify dulu
-      await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      
-      // Update state untuk UI update (menampilkan checkmark, dll)
-      setSelectedDifficulty(difficulty);
-      
-      // Log untuk debugging
-      console.log('Settings saved:', settings);
-    } catch (error) {
-      // Jika terjadi error saat menyimpan, log error dan tampilkan alert ke user
-      console.error('Error saving settings:', error);
-      alert('Gagal menyimpan pengaturan');
-    }
-  };
-
-  // ============================================
-  // EVENT HANDLER
-  // ============================================
-  /**
-   * Handler saat user mengubah tingkat kesulitan
-   * 
-   * Fungsi ini dipanggil ketika user menekan salah satu card tingkat kesulitan
-   * Memanggil saveSettings untuk menyimpan pengaturan baru ke AsyncStorage
-   * 
-   * @param difficulty - Tingkat kesulitan yang dipilih user
-   */
-  const handleDifficultyChange = (difficulty: DifficultyLevel) => {
-    // Simpan pengaturan baru ke AsyncStorage
-    saveSettings(difficulty);
-  };
-
-  // ============================================
-  // RENDER LOADING STATE
-  // ============================================
-  /**
-   * Render loading screen saat pengaturan sedang dimuat
-   * Ditampilkan saat pertama kali komponen mount dan sedang memuat pengaturan dari storage
-   */
-  if (loading) {
-    return (
-      /* Container utama dengan padding top untuk safe area */
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        {/* Status bar dengan style light (teks putih) */}
-        <StatusBar style="light" />
-        {/* Container untuk menampilkan teks loading di tengah */}
-        <View style={styles.centerContainer}>
-          <Text style={styles.loadingText}>Memuat pengaturan...</Text>
-        </View>
-      </View>
-    );
-  }
-
-  // ============================================
-  // RENDER MAIN UI
-  // ============================================
-  /**
-   * Render utama halaman pengaturan
-   * Menampilkan semua opsi tingkat kesulitan dan informasi
-   */
-  return (
-    /* Container utama dengan padding top untuk safe area */
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Status bar dengan style light (teks putih) untuk kontras dengan background gelap */}
-      <StatusBar style="light" />
-      
-      {/* ============================================
-          HEADER SECTION
-          ============================================ */}
-      {/* Header dengan judul halaman */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Pengaturan Game</Text>
-      </View>
-
-      {/* ============================================
-          SCROLLABLE CONTENT
-          ============================================ */}
-      {/* ScrollView untuk konten yang bisa di-scroll jika terlalu panjang */}
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* ============================================
-            SECTION: TINGKAT KESULITAN
-            ============================================ */}
-        {/* Section untuk menampilkan opsi tingkat kesulitan */}
-        <View style={styles.section}>
-          {/* Judul section */}
-          <Text style={styles.sectionTitle}>Tingkat Kesulitan</Text>
-          
-          {/* Deskripsi section yang menjelaskan apa itu tingkat kesulitan */}
-          <Text style={styles.sectionDescription}>
-            Pilih tingkat kesulitan yang sesuai dengan kemampuan Anda. 
-            Tingkat kesulitan mempengaruhi kecepatan bola dalam permainan.
-          </Text>
-
-          {/* ============================================
-              RENDER SETIAP OPSI TINGKAT KESULITAN
-              ============================================ */}
-          {/* Map setiap konfigurasi kesulitan menjadi card yang bisa diklik */}
-          {/* Object.entries mengubah object menjadi array [key, value] */}
-          {Object.entries(DIFFICULTY_CONFIGS).map(([key, config]) => {
-            // Convert key menjadi DifficultyLevel type
-            const difficulty = key as DifficultyLevel;
+    const saveSettings = async (difficulty: DifficultyLevel) => {
+        try {
+            const settings: GameSettings = {
+                difficulty,
+                ballSpeed: DIFFICULTY_CONFIGS[difficulty].speed,
+            };
+            await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+            setSelectedDifficulty(difficulty);
             
-            // Cek apakah tingkat kesulitan ini yang sedang dipilih
-            const isSelected = selectedDifficulty === difficulty;
+            // Tampilkan notifikasi kecil menggunakan Alert yang sudah diimpor
+            Alert.alert('Pengaturan Tersimpan', `Tingkat kesulitan diatur ke ${DIFFICULTY_CONFIGS[difficulty].label}.`);
 
-            // Render card untuk setiap tingkat kesulitan
-            return (
-              <TouchableOpacity
-                key={key}  // Key unik untuk React reconciliation
-                style={[
-                  styles.difficultyCard,                    // Style dasar card
-                  isSelected && styles.difficultyCardSelected, // Style tambahan jika dipilih
-                ]}
-                onPress={() => handleDifficultyChange(difficulty)} // Handler saat card ditekan
-              >
-                {/* Header card dengan label dan checkmark */}
-                <View style={styles.difficultyHeader}>
-                  {/* Container untuk informasi kesulitan */}
-                  <View style={styles.difficultyInfo}>
-                    {/* Label tingkat kesulitan (Mudah, Sedang, Sulit) */}
-                    <Text style={[
-                      styles.difficultyLabel,                    // Style dasar label
-                      isSelected && styles.difficultyLabelSelected, // Style tambahan jika dipilih
-                    ]}>
-                      {config.label}
-                    </Text>
-                    {/* Teks kecepatan bola */}
-                    <Text style={styles.difficultySpeed}>
-                      Kecepatan Bola: {config.speed}
-                    </Text>
-                  </View>
-                  
-                  {/* Checkmark hanya ditampilkan jika tingkat kesulitan ini dipilih */}
-                  {isSelected && (
-                    <View style={styles.checkmark}>
-                      <Text style={styles.checkmarkText}>✓</Text>
-                    </View>
-                  )}
+        } catch (error: any) {
+            console.error('Error saving settings:', error);
+            // Alert juga diperbaiki di sini
+            Alert.alert('Gagal', error.message || 'Gagal menyimpan pengaturan. Silakan coba lagi.');
+        }
+    };
+
+    const handleDifficultyChange = (difficulty: DifficultyLevel) => {
+        saveSettings(difficulty);
+    };
+
+    if (loading) {
+        return (
+            <View style={[styles.container, { paddingTop: insets.top }]}>
+                <StatusBar style="light" />
+                <View style={styles.centerContainer}>
+                    <ActivityIndicator size="large" color={ACCENT_COLOR} />
+                    <Text style={styles.loadingText}>Memuat pengaturan...</Text>
                 </View>
-                
-                {/* Deskripsi tingkat kesulitan */}
-                <Text style={[
-                  styles.difficultyDescription,                    // Style dasar deskripsi
-                  isSelected && styles.difficultyDescriptionSelected, // Style tambahan jika dipilih
-                ]}>
-                  {config.description}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+            </View>
+        );
+    }
 
-        {/* ============================================
-            SECTION: INFORMASI
-            ============================================ */}
-        {/* Section untuk menampilkan informasi tentang pengaturan */}
-        <View style={styles.infoSection}>
-          {/* Judul section informasi */}
-          <Text style={styles.infoTitle}>ℹ️ Informasi</Text>
-          
-          {/* Teks informasi tentang pengaturan */}
-          <Text style={styles.infoText}>
-            • Pengaturan akan diterapkan pada permainan berikutnya{'\n'}
-            • Skor dan statistik tidak terpengaruh oleh tingkat kesulitan{'\n'}
-            • Anda dapat mengubah pengaturan kapan saja
-          </Text>
+    return (
+        <View style={[styles.container, { paddingTop: insets.top }]}>
+            <StatusBar style="light" />
+            
+            {/* HEADER SECTION */}
+            <View style={styles.header}>
+                <MaterialIcons name="settings" size={28} color={ACCENT_COLOR} />
+                <Text style={styles.title}>Pengaturan Game</Text>
+            </View>
+
+            {/* SCROLLABLE CONTENT */}
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+                
+                {/* SECTION: TINGKAT KESULITAN */}
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Pilih Kecepatan Bola</Text>
+                    <Text style={styles.sectionDescription}>
+                        Pengaturan ini menentukan kecepatan bola di awal setiap permainan.
+                    </Text>
+
+                    {/* RENDER OPSI TINGKAT KESULITAN */}
+                    {Object.entries(DIFFICULTY_CONFIGS).map(([key, config]) => {
+                        const difficulty = key as DifficultyLevel;
+                        const isSelected = selectedDifficulty === difficulty;
+
+                        return (
+                            <TouchableOpacity
+                                key={key}
+                                style={[
+                                    styles.difficultyCard,
+                                    isSelected && styles.difficultyCardSelected,
+                                    // Warna shadow/border sesuai kesulitan
+                                    isSelected && { borderColor: config.color, shadowColor: config.color } 
+                                ]}
+                                onPress={() => handleDifficultyChange(difficulty)}
+                            >
+                                <View style={styles.difficultyHeader}>
+                                    
+                                    {/* ICON MATERIAL */}
+                                    <MaterialIcons 
+                                        name={config.icon} 
+                                        size={30} 
+                                        color={isSelected ? config.color : '#ccc'} 
+                                        style={styles.icon}
+                                    />
+                                    
+                                    <View style={styles.difficultyInfo}>
+                                        <Text style={[styles.difficultyLabel, { color: isSelected ? config.color : '#fff' }]}>
+                                            {config.label}
+                                        </Text>
+                                        <Text style={styles.difficultyDescriptionCard}>
+                                            {config.description}
+                                        </Text>
+                                    </View>
+                                    
+                                    {/* SPEED BADGE */}
+                                    <View style={[styles.speedBadge, { backgroundColor: config.color }]}>
+                                        <Text style={styles.speedText}>
+                                            Speed {config.speed}
+                                        </Text>
+                                    </View>
+
+                                    {/* Checkmark */}
+                                    {isSelected && (
+                                        <MaterialIcons name="check-circle" size={24} color={config.color} style={styles.checkmarkIcon} />
+                                    )}
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
+
+                {/* SECTION: INFORMASI */}
+                <View style={[styles.section, styles.infoContainer]}>
+                    <Text style={styles.infoTitle}>💡 Penting!</Text>
+                    <View style={styles.infoRow}>
+                        <MaterialIcons name="done-all" size={16} color={ACCENT_COLOR} style={styles.infoBullet} />
+                        <Text style={styles.infoText}>Pengaturan akan diterapkan pada permainan berikutnya.</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <MaterialIcons name="history" size={16} color={ACCENT_COLOR} style={styles.infoBullet} />
+                        <Text style={styles.infoText}>Anda dapat mengubah pengaturan ini kapan saja di menu ini.</Text>
+                    </View>
+                </View>
+            </ScrollView>
         </View>
-      </ScrollView>
-    </View>
-  );
+    );
 }
 
-/**
- * StyleSheet untuk semua komponen UI dalam halaman pengaturan
- * Menggunakan StyleSheet.create untuk optimasi performa React Native
- * 
- * Skema warna:
- * - Background utama: #1a1a2e (biru tua gelap)
- * - Background card: #2a2a3e (biru tua lebih terang)
- * - Background card selected: #3a3a4e (biru tua lebih terang lagi)
- * - Warna accent: #4ecdc4 (cyan/hijau muda)
- * - Teks utama: #fff (putih)
- * - Teks sekunder: #ccc, #999, #666 (abu-abu dengan berbagai tingkat)
- */
 const styles = StyleSheet.create({
-  // ============================================
-  // STYLE UNTUK CONTAINER UTAMA
-  // ============================================
-  /**
-   * Style untuk container utama halaman
-   */
-  container: {
-    flex: 1,                      // Mengisi seluruh ruang yang tersedia
-    backgroundColor: '#1a1a2e',  // Background warna biru tua gelap (sama dengan halaman lain)
-  },
-  
-  // ============================================
-  // STYLE UNTUK HEADER
-  // ============================================
-  /**
-   * Style untuk header halaman
-   */
-  header: {
-    paddingHorizontal: 20,        // Padding horizontal 20px
-    paddingVertical: 15,          // Padding vertikal 15px
-    borderBottomWidth: 1,         // Ketebalan border bawah 1px
-    borderBottomColor: '#333',     // Warna border abu-abu gelap
-  },
-  
-  /**
-   * Style untuk judul header
-   */
-  title: {
-    fontSize: 24,                 // Ukuran font 24px (cukup besar untuk header)
-    fontWeight: 'bold',           // Teks tebal untuk emphasis
-    color: '#fff',                // Warna putih untuk kontras dengan background gelap
-  },
-  
-  // ============================================
-  // STYLE UNTUK LOADING STATE
-  // ============================================
-  /**
-   * Style untuk container loading (tengah layar)
-   */
-  centerContainer: {
-    flex: 1,                      // Mengisi seluruh ruang yang tersedia
-    justifyContent: 'center',     // Tengahkan konten secara vertikal
-    alignItems: 'center',         // Tengahkan konten secara horizontal
-  },
-  
-  /**
-   * Style untuk teks loading
-   */
-  loadingText: {
-    color: '#fff',                // Warna putih
-    fontSize: 16,                 // Ukuran font 16px
-  },
-  
-  // ============================================
-  // STYLE UNTUK SCROLLVIEW
-  // ============================================
-  /**
-   * Style untuk ScrollView container
-   */
-  scrollView: {
-    flex: 1,                      // Mengisi ruang yang tersedia setelah header
-  },
-  
-  /**
-   * Style untuk konten di dalam ScrollView
-   */
-  scrollContent: {
-    padding: 20,                   // Padding 20px di semua sisi untuk spacing
-  },
-  
-  // ============================================
-  // STYLE UNTUK SECTION
-  // ============================================
-  /**
-   * Style untuk setiap section dalam halaman
-   */
-  section: {
-    marginBottom: 30,             // Jarak bawah 30px untuk spacing antar section
-  },
-  
-  /**
-   * Style untuk judul section
-   */
-  sectionTitle: {
-    fontSize: 20,                 // Ukuran font 20px
-    fontWeight: 'bold',           // Teks tebal
-    color: '#fff',                // Warna putih
-    marginBottom: 10,             // Jarak bawah 10px
-  },
-  
-  /**
-   * Style untuk deskripsi section
-   */
-  sectionDescription: {
-    fontSize: 14,                 // Ukuran font 14px (ukuran standar untuk paragraf)
-    color: '#999',                // Warna abu-abu terang
-    marginBottom: 20,             // Jarak bawah 20px
-    lineHeight: 20,               // Tinggi baris 20px untuk spacing yang nyaman
-  },
-  
-  // ============================================
-  // STYLE UNTUK CARD TINGKAT KESULITAN
-  // ============================================
-  /**
-   * Style dasar untuk card tingkat kesulitan
-   */
-  difficultyCard: {
-    backgroundColor: '#2a2a3e',   // Background biru tua lebih terang dari background utama
-    borderRadius: 12,             // Border radius 12px untuk sudut melengkung
-    padding: 20,                  // Padding 20px di semua sisi
-    marginBottom: 15,             // Jarak bawah 15px antar card
-    borderWidth: 2,               // Ketebalan border 2px
-    borderColor: 'transparent',   // Border transparan (tidak terlihat) saat tidak dipilih
-  },
-  
-  /**
-   * Style tambahan untuk card yang dipilih
-   * Style ini digabungkan dengan difficultyCard saat card dipilih
-   */
-  difficultyCardSelected: {
-    backgroundColor: '#3a3a4e',   // Background lebih terang untuk menunjukkan dipilih
-    borderColor: '#4ecdc4',       // Border warna cyan untuk highlight
-  },
-  
-  /**
-   * Style untuk header card (label dan checkmark)
-   */
-  difficultyHeader: {
-    flexDirection: 'row',         // Layout horizontal
-    justifyContent: 'space-between', // Space between untuk memisahkan label dan checkmark
-    alignItems: 'center',         // Align items di tengah secara vertikal
-    marginBottom: 10,             // Jarak bawah 10px
-  },
-  
-  /**
-   * Style untuk container informasi kesulitan (label dan speed)
-   */
-  difficultyInfo: {
-    flex: 1,                      // Mengisi ruang yang tersedia
-  },
-  
-  /**
-   * Style untuk label tingkat kesulitan (Mudah, Sedang, Sulit)
-   */
-  difficultyLabel: {
-    fontSize: 18,                 // Ukuran font 18px (cukup besar untuk label)
-    fontWeight: 'bold',           // Teks tebal
-    color: '#fff',                // Warna putih
-    marginBottom: 5,              // Jarak bawah 5px
-  },
-  
-  /**
-   * Style tambahan untuk label yang dipilih
-   */
-  difficultyLabelSelected: {
-    color: '#4ecdc4',             // Warna cyan untuk menunjukkan dipilih
-  },
-  
-  /**
-   * Style untuk teks kecepatan bola
-   */
-  difficultySpeed: {
-    fontSize: 14,                 // Ukuran font 14px
-    color: '#999',                // Warna abu-abu terang
-  },
-  
-  /**
-   * Style untuk checkmark (tanda centang)
-   */
-  checkmark: {
-    width: 30,                    // Lebar 30px
-    height: 30,                   // Tinggi 30px
-    borderRadius: 15,             // Border radius setengah ukuran untuk membuat lingkaran
-    backgroundColor: '#4ecdc4',   // Background warna cyan
-    justifyContent: 'center',     // Tengahkan konten secara vertikal
-    alignItems: 'center',          // Tengahkan konten secara horizontal
-  },
-  
-  /**
-   * Style untuk teks checkmark (simbol ✓)
-   */
-  checkmarkText: {
-    color: '#fff',                // Warna putih untuk kontras dengan background cyan
-    fontSize: 18,                 // Ukuran font 18px
-    fontWeight: 'bold',           // Teks tebal
-  },
-  
-  /**
-   * Style untuk deskripsi tingkat kesulitan
-   */
-  difficultyDescription: {
-    fontSize: 14,                 // Ukuran font 14px
-    color: '#999',               // Warna abu-abu terang
-    lineHeight: 20,              // Tinggi baris 20px untuk spacing yang nyaman
-  },
-  
-  /**
-   * Style tambahan untuk deskripsi yang dipilih
-   */
-  difficultyDescriptionSelected: {
-    color: '#ccc',                // Warna abu-abu lebih terang untuk menunjukkan dipilih
-  },
-  
-  // ============================================
-  // STYLE UNTUK SECTION INFORMASI
-  // ============================================
-  /**
-   * Style untuk section informasi
-   */
-  infoSection: {
-    backgroundColor: '#2a2a3e',   // Background biru tua lebih terang
-    borderRadius: 12,             // Border radius 12px untuk sudut melengkung
-    padding: 20,                  // Padding 20px di semua sisi
-    marginTop: 20,                // Jarak atas 20px dari section sebelumnya
-  },
-  
-  /**
-   * Style untuk judul informasi
-   */
-  infoTitle: {
-    fontSize: 16,                 // Ukuran font 16px
-    fontWeight: 'bold',           // Teks tebal
-    color: '#4ecdc4',             // Warna cyan (brand color)
-    marginBottom: 10,              // Jarak bawah 10px
-  },
-  
-  /**
-   * Style untuk teks informasi
-   */
-  infoText: {
-    fontSize: 14,                 // Ukuran font 14px
-    color: '#999',                // Warna abu-abu terang
-    lineHeight: 22,               // Tinggi baris 22px untuk spacing yang nyaman
-  },
-});
+    // ============================================
+    // STYLE UMUM
+    // ============================================
+    container: {
+        flex: 1,
+        backgroundColor: BG_DARK,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: 20,
+    },
+    section: {
+        marginBottom: 30,
+    },
+    // LOADING STATE
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        color: '#fff',
+        fontSize: 16,
+        marginTop: 10,
+    },
 
+    // ============================================
+    // HEADER
+    // ============================================
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#fff',
+        marginLeft: 10,
+    },
+
+    // ============================================
+    // SECTION TITLE & DESCRIPTION
+    // ============================================
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#fff',
+        marginBottom: 5,
+    },
+    sectionDescription: {
+        fontSize: 14,
+        color: '#999',
+        marginBottom: 20,
+    },
+
+    // ============================================
+    // DIFFICULTY CARD
+    // ============================================
+    difficultyCard: {
+        backgroundColor: CARD_BASE,
+        borderRadius: 12,
+        padding: 15,
+        marginBottom: 15,
+        borderWidth: 2,
+        borderColor: 'transparent',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    difficultyCardSelected: {
+        backgroundColor: '#3a3a4e', // Lebih terang untuk yang dipilih
+        borderWidth: 2,
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    difficultyHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    icon: {
+        marginRight: 15,
+        width: 30, // Tetapkan lebar agar sejajar
+        textAlign: 'center',
+    },
+    difficultyInfo: {
+        flex: 1,
+        marginRight: 10,
+    },
+    difficultyLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 3,
+    },
+    difficultyDescriptionCard: {
+        fontSize: 12,
+        color: '#ccc',
+        marginTop: 5,
+    },
+    
+    // SPEED BADGE
+    speedBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 15,
+        marginLeft: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minWidth: 80,
+    },
+    speedText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: BG_DARK, // Teks gelap pada badge warna terang
+    },
+    checkmarkIcon: {
+        marginLeft: 10,
+    },
+
+    // ============================================
+    // INFORMASI SECTION
+    // ============================================
+    infoContainer: {
+        backgroundColor: CARD_BASE,
+        borderRadius: 12,
+        padding: 20,
+        borderLeftWidth: 5,
+        borderLeftColor: ACCENT_COLOR,
+    },
+    infoTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: ACCENT_COLOR,
+        marginBottom: 10,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: 5,
+    },
+    infoBullet: {
+        marginRight: 10,
+        marginTop: 2,
+    },
+    infoText: {
+        flex: 1,
+        fontSize: 14,
+        color: '#ccc',
+        lineHeight: 20,
+    },
+});

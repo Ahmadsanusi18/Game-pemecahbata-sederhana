@@ -2,153 +2,135 @@
  * ============================================
  * WATERMARK DEVELOPER
  * ============================================
- * Nama        : Edi Suherlan
- * GitHub      : github/edisuherlan
- * Email       : audhighasu@gmail.com
- * Website     : audhighasu.com
+ * Nama        : Ahmad Sanusi
+ * GitHub      : github/Ahmadsanusi18
+ * Email       : ahmadsanusiii18@gmail.com
  * ============================================
- * 
- * FILE: app/(tabs)/_layout.tsx
+ * * FILE: app/(tabs)/_layout.tsx
  * DESKRIPSI: Layout untuk tab navigation aplikasi
- * 
- * File ini mendefinisikan struktur navigasi tab di aplikasi.
- * Menggunakan expo-router untuk routing dan menampilkan 4 tab utama:
- * - Game: Halaman utama untuk bermain game
- * - Pengaturan: Halaman pengaturan tingkat kesulitan
- * - Leaderboard: Halaman papan peringkat pemain
- * - Info: Halaman informasi developer
+ * UPDATE: Desain Glassmorphism (Blur Transparan) dan Ikon MaterialIcons Baru
  */
 
-// Import komponen Tabs dari expo-router untuk membuat tab navigation
 import { Tabs } from 'expo-router';
-// Import React untuk membuat komponen
 import React from 'react';
 
-// Import komponen HapticTab untuk memberikan feedback haptic saat tab ditekan
-// Haptic feedback memberikan sensasi getar ringan untuk UX yang lebih baik
+// Import komponen-komponen yang diperlukan
+// Catatan: Jika Anda tidak menggunakan IconSymbol, Anda bisa mengganti ini dengan MaterialIcons dari expo
+// Untuk tujuan ini, kita akan mengimpor MaterialIcons dari expo/vector-icons
+import { MaterialIcons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur'; // Import BlurView untuk efek Glassmorphism
+import { Platform, View, StyleSheet } from 'react-native'; // Import View dan Platform
+
+// Import komponen HapticTab dan hook yang mungkin Anda butuhkan
 import { HapticTab } from '@/components/haptic-tab';
-// Import komponen IconSymbol untuk menampilkan icon di tab bar
-// IconSymbol adalah wrapper yang memetakan SF Symbols (iOS) ke MaterialIcons (Android/Web)
-import { IconSymbol } from '@/components/ui/icon-symbol';
-// Import Colors dari constants untuk mendapatkan warna tema aplikasi
-// Colors berisi definisi warna untuk light dan dark mode
 import { Colors } from '@/constants/theme';
-// Import hook useColorScheme untuk mendeteksi tema sistem (light/dark mode)
-// Hook ini mengembalikan 'light', 'dark', atau null
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-/**
- * Komponen TabLayout - Layout utama untuk tab navigation
- * 
- * Komponen ini mendefinisikan struktur navigasi tab di aplikasi.
- * Setiap tab memiliki:
- * - Nama file yang sesuai dengan route
- * - Title yang ditampilkan di tab bar
- * - Icon yang ditampilkan di tab bar
- * 
- * Tab navigation memungkinkan user untuk berpindah antar halaman dengan mudah
- * menggunakan tab bar di bagian bawah layar.
- * 
- * @returns JSX.Element - Komponen Tabs dengan konfigurasi semua tab screens
- */
-export default function TabLayout() {
-  // ============================================
-  // DETEKSI TEMA SISTEM
-  // ============================================
-  /**
-   * Mendapatkan tema sistem saat ini (light/dark mode)
-   * colorScheme akan berisi 'light', 'dark', atau null
-   * Jika null, akan menggunakan 'light' sebagai default
-   */
-  const colorScheme = useColorScheme();
+// Warna yang digunakan dalam skema dark mode
+const DARK_MODE_BG = 'rgba(18, 18, 30, 0.8)'; // Warna gelap dengan sedikit transparansi
 
-  // ============================================
-  // RENDER TAB NAVIGATION
-  // ============================================
-  return (
-    /* Komponen Tabs dari expo-router untuk membuat tab navigation */
-    <Tabs
-      /* screenOptions: Konfigurasi global untuk semua tab screens */
-      screenOptions={{
-        /* tabBarActiveTintColor: Warna untuk tab yang sedang aktif */
-        /* Menggunakan warna tint dari tema yang terdeteksi (light/dark) */
-        /* Jika colorScheme null, menggunakan tema 'light' sebagai fallback */
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        
-        /* headerShown: Menyembunyikan header di semua tab screens */
-        /* Set ke false karena kita tidak ingin menampilkan header di setiap halaman */
-        /* Setiap halaman akan mengatur header sendiri jika diperlukan */
-        headerShown: false,
-        
-        /* tabBarButton: Komponen custom untuk tombol tab */
-        /* Menggunakan HapticTab untuk memberikan feedback haptic saat tab ditekan */
-        /* Ini memberikan sensasi getar ringan untuk UX yang lebih baik */
-        tabBarButton: HapticTab,
-      }}>
-      
-      {/* ============================================
-          TAB 1: GAME (HALAMAN UTAMA)
-          ============================================ */}
-      {/* Tab untuk halaman utama game (file: index.tsx) */}
-      {/* name: Nama file route (index.tsx) */}
-      {/* title: Judul yang ditampilkan di tab bar */}
-      {/* tabBarIcon: Icon yang ditampilkan di tab bar dengan ukuran 28px */}
-      {/* Icon "gamecontroller.fill" menggambarkan game controller */}
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Game',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="gamecontroller.fill" color={color} />,
-        }}
-      />
-      
-      {/* ============================================
-          TAB 2: PENGATURAN (SETTINGS)
-          ============================================ */}
-      {/* Tab untuk halaman pengaturan game (file: settings.tsx) */}
-      {/* name: Nama file route (settings.tsx) */}
-      {/* title: Judul yang ditampilkan di tab bar (bahasa Indonesia) */}
-      {/* tabBarIcon: Icon untuk pengaturan dengan ukuran 28px */}
-      {/* Icon "slider.horizontal.3" menggambarkan pengaturan/slider */}
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Pengaturan',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="slider.horizontal.3" color={color} />,
-        }}
-      />
-      
-      {/* ============================================
-          TAB 3: LEADERBOARD (PAPAN PERINGKAT)
-          ============================================ */}
-      {/* Tab untuk halaman leaderboard (file: leaderboard.tsx) */}
-      {/* name: Nama file route (leaderboard.tsx) */}
-      {/* title: Judul yang ditampilkan di tab bar */}
-      {/* tabBarIcon: Icon untuk leaderboard dengan ukuran 28px */}
-      {/* Icon "chart.bar.fill" menggambarkan grafik/statistik */}
-      <Tabs.Screen
-        name="leaderboard"
-        options={{
-          title: 'Leaderboard',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
-        }}
-      />
-      
-      {/* ============================================
-          TAB 4: INFO (INFORMASI DEVELOPER)
-          ============================================ */}
-      {/* Tab untuk halaman informasi developer (file: info.tsx) */}
-      {/* name: Nama file route (info.tsx) */}
-      {/* title: Judul yang ditampilkan di tab bar */}
-      {/* tabBarIcon: Icon untuk informasi dengan ukuran 28px */}
-      {/* Icon "info.circle.fill" menggambarkan informasi */}
-      <Tabs.Screen
-        name="info"
-        options={{
-          title: 'Info',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="info.circle.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+/**
+ * Komponen IconWrapper - Menggantikan IconSymbol untuk konsistensi
+ * Menggunakan MaterialIcons untuk mempermudah implementasi
+ */
+const IconWrapper = ({ name, color }: { name: keyof typeof MaterialIcons.glyphMap, color: string }) => (
+    <MaterialIcons size={28} name={name} color={color} />
+);
+
+export default function TabLayout() {
+    const colorScheme = useColorScheme();
+    const activeColor = Colors[colorScheme ?? 'light'].tint;
+
+    return (
+        <Tabs
+            screenOptions={{
+                tabBarActiveTintColor: activeColor,
+                headerShown: false,
+                tabBarButton: HapticTab,
+
+                // ============================================
+                // GLASSMORHPISM / BLUR TRANSPARAN STYLES
+                // ============================================
+                tabBarStyle: {
+                    position: 'absolute', // Penting untuk efek transparan
+                    backgroundColor: 'transparent', // Atur warna latar belakang tab bar menjadi transparan
+                    borderTopWidth: 0, // Hilangkan garis atas default
+                    elevation: 0, // Hilangkan shadow/elevasi pada Android
+                    paddingBottom: Platform.OS === 'ios' ? 0 : 5, // Sesuaikan padding bawah
+                    paddingTop: 5,
+                    height: Platform.OS === 'ios' ? 85 : 60, // Sesuaikan tinggi tab bar
+                },
+                
+                // Tambahkan latar belakang BlurView di belakang tab bar
+                tabBarBackground: () => (
+                    <BlurView 
+                        intensity={40} // Atur intensitas blur, semakin tinggi semakin blur
+                        tint={colorScheme === 'dark' ? 'dark' : 'light'} // Sesuaikan tint blur
+                        style={StyleSheet.absoluteFill}
+                    >
+                        {/* Overlay semi-transparan gelap di atas blur untuk tema gelap */}
+                        {colorScheme === 'dark' && (
+                             <View style={styles.darkOverlay} />
+                        )}
+                    </BlurView>
+                ),
+            }}>
+            
+            {/* ============================================
+                TAB 1: GAME (HALAMAN UTAMA) - IKON BARU
+                ============================================ */}
+            <Tabs.Screen
+                name="index"
+                options={{
+                    title: 'Game',
+                    // Ikon Baru: sports-esports (Joystick)
+                    tabBarIcon: ({ color }) => <IconWrapper name="sports-esports" color={color} />,
+                }}
+            />
+            
+            {/* ============================================
+                TAB 2: PENGATURAN (SETTINGS) - IKON BARU
+                ============================================ */}
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    title: 'Pengaturan',
+                    // Ikon Baru: tune (Tuner/Pengaturan)
+                    tabBarIcon: ({ color }) => <IconWrapper name="tune" color={color} />,
+                }}
+            />
+            
+            {/* ============================================
+                TAB 3: LEADERBOARD (PAPAN PERINGKAT) - IKON BARU
+                ============================================ */}
+            <Tabs.Screen
+                name="leaderboard"
+                options={{
+                    title: 'Leaderboard',
+                    // Ikon Baru: emoji-events (Piala/Trofi)
+                    tabBarIcon: ({ color }) => <IconWrapper name="emoji-events" color={color} />,
+                }}
+            />
+            
+            {/* ============================================
+                TAB 4: INFO (INFORMASI DEVELOPER) - IKON BARU
+                ============================================ */}
+            <Tabs.Screen
+                name="info"
+                options={{
+                    title: 'Info',
+                    // Ikon Baru: help-center (Pusat Bantuan)
+                    tabBarIcon: ({ color }) => <IconWrapper name="help-center" color={color} />,
+                }}
+            />
+        </Tabs>
+    );
 }
+
+const styles = StyleSheet.create({
+    // Style untuk overlay gelap di atas BlurView (khusus dark mode)
+    darkOverlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: DARK_MODE_BG, // Warna latar belakang gelap semi-transparan
+    },
+});

@@ -2,10 +2,9 @@
  * ============================================
  * WATERMARK DEVELOPER
  * ============================================
- * Nama        : Edi Suherlan
- * GitHub      : github/edisuherlan
- * Email       : audhighasu@gmail.com
- * Website     : audhighasu.com
+ * Nama        : Ahmad Sanusi
+ * GitHub      : github/Ahmadsanusi18
+ * Email       : ahmadsanusiii18@gmail.com
  * ============================================
  * 
  * FILE: app/(tabs)/index.tsx
@@ -573,7 +572,7 @@ export default function BreakoutGame() {
     // Hitung posisi bounding box paddle untuk collision detection
     const paddleLeft = paddleXPos.current;                                    // Posisi X kiri paddle
     const paddleRight = paddleXPos.current + PADDLE_WIDTH;                    // Posisi X kanan paddle
-    const paddleTop = SCREEN_HEIGHT - PADDLE_HEIGHT - 30 - insets.bottom;     // Posisi Y atas paddle (30px dari bawah + safe area)
+    const paddleTop = SCREEN_HEIGHT - PADDLE_HEIGHT - 80 - insets.bottom;     // Posisi Y atas paddle (30px dari bawah + safe area)
     const paddleBottom = paddleTop + PADDLE_HEIGHT;                           // Posisi Y bawah paddle
 
     // Hanya cek collision jika bola bergerak ke bawah (menuju paddle)
@@ -967,7 +966,8 @@ export default function BreakoutGame() {
             styles.paddle,  // Style dasar paddle
             {
               left: paddleX,                    // Posisi X dari animated value
-              bottom: 30 + insets.bottom,        // Posisi Y dari bawah (30px + safe area)
+              bottom: 80 + insets.bottom
+        // Posisi Y dari bawah (30px + safe area)
             },
           ]}
         />
