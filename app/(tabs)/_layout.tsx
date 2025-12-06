@@ -120,7 +120,7 @@ export default function TabLayout() {
                 options={{
                     title: 'Info',
                     // Ikon Baru: help-center (Pusat Bantuan)
-                    tabBarIcon: ({ color }) => <IconWrapper name="help-center" color={color} />,
+                    tabBarIcon: ({ color }) => <IconWrapper name="info" color={color} />,
                 }}
             />
         </Tabs>
